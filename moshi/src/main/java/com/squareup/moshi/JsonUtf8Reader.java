@@ -789,7 +789,7 @@ final class JsonUtf8Reader extends JsonReader {
       // If we've got an escape character, we're going to need a string builder.
       if (buffer.getByte(index) == '\\') {
         if (builder == null) builder = new StringBuilder(Math.max((int) index, 16));
-        int len = (int) index - 1;
+        int len = (int) index;
         builder.append(buffer.readUtf8(index), 0, len);
         buffer.readByte(); // '\'
         builder.append(readEscapeCharacter());
@@ -802,7 +802,7 @@ final class JsonUtf8Reader extends JsonReader {
         buffer.readByte(); // Consume the quote character.
         return result;
       } else {
-        int len = (int) index - 1;
+        int len = (int) index;
         builder.append(buffer.readUtf8(index), 0, len);
         buffer.readByte(); // Consume the quote character.
         return builder.toString();
