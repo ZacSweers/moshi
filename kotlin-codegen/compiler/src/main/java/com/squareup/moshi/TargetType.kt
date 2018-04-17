@@ -62,6 +62,14 @@ internal data class TargetType(
     /** Returns a target type for `element`, or null if it cannot be used with code gen. */
     fun get(messager: Messager, elements: Elements, types: Types, element: Element): TargetType? {
       val typeMetadata: KotlinMetadata? = element.kotlinMetadata
+      if (typeMetadata == null
+          && element.annotationMirrors.any {
+            it.annotationType.asElement().simpleName.toString() == "Metadata"
+          }) {
+        messager.printMessage(
+            ERROR, "Could not read @Metadata from $element: please ensure the Kotlin standard library is on the classpath.", element)
+        return null
+      }
       if (element !is TypeElement || typeMetadata !is KotlinClassMetadata) {
         messager.printMessage(
             ERROR, "@JsonClass can't be applied to $element: must be a Kotlin class", element)
