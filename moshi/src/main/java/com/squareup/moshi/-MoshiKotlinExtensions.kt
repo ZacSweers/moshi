@@ -13,11 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.moshi.kotlin.reflect
+package com.squareup.moshi
 
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.Types
 import com.squareup.moshi.internal.NonNullJsonAdapter
 import com.squareup.moshi.internal.NullSafeJsonAdapter
 import java.lang.reflect.Type
@@ -35,6 +32,15 @@ import kotlin.reflect.typeOf
 @ExperimentalStdlibApi
 inline fun <reified T> Moshi.adapter(): JsonAdapter<T> {
   return adapter(typeOf<T>())
+}
+
+/** Returns a [JsonAdapter] for [T] skipping past [skipPast], creating it if necessary. */
+@ExperimentalStdlibApi
+inline fun <reified T> Moshi.nextAdapter(
+  skipPast: JsonAdapter.Factory,
+  annotations: Set<Annotation>
+): JsonAdapter<T> {
+  return nextAdapter(skipPast, typeOf<T>().toType(), annotations)
 }
 
 @ExperimentalStdlibApi
@@ -102,7 +108,7 @@ internal fun KTypeProjection.toType(): Type {
 }
 
 private inline fun <T, reified R> List<T>.toTypedArray(mapper: (T) -> R): Array<R> {
-  return Array(size) {
-    mapper.invoke(get(it))
+  return Array(size) { index ->
+    mapper.invoke(get(index))
   }
 }
